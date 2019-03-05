@@ -1,10 +1,26 @@
 """
 Base settings to build other settings files upon.
 """
-
+import json
 import environ
+import os
+from django.core.exceptions import ImproperlyConfigured
 
+with open("secrets.json") as f:
+    secrets = json.loads(f.read())
+print(secrets)
+def get_env_varible(var_name):
+    try:
+        return os.environ["var_name"]
+    except KeyError:
+        raise ImproperlyConfigured('{} donot have a akey, try to set it '.format(var_name))
+def get_secret(setting,secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured("{} you have to set this key in the secrets json file".format(setting))
 ROOT_DIR = environ.Path(__file__) - 3  # (cookie/config/settings/base.py - 3 = cookie/)
+print(ROOT_DIR)
 APPS_DIR = ROOT_DIR.path('cookie')
 
 env = environ.Env()
@@ -13,6 +29,7 @@ READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR.path('.env')))
+DJANGO_SETTINGS_MODULE = 'config.settings.base'
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -38,8 +55,18 @@ USE_TZ = True
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': env.db('DATABASE_URL', default='postgres://localhost/cookie'),
+}'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'twoscope',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
@@ -59,7 +86,7 @@ DJANGO_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.humanize', # Handy template tags
+    'django.contrib.humanize', # Handy template tags
     'django.contrib.admin',
 ]
 THIRD_PARTY_APPS = [
@@ -238,7 +265,8 @@ if USE_TZ:
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-timezone
     CELERY_TIMEZONE = TIME_ZONE
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
-CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+#CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_BROKER_URL = 'redis://127.0.0.1:6397'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content

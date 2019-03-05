@@ -24,7 +24,11 @@ if __name__ == "__main__":
 
     # This allows easy placement of apps within the interior
     # cookie directory.
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    print(os.path.realpath(__file__))
+    print(sys.path.append(os.path.dirname(os.path.realpath(__file__))))
     current_path = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(os.path.join(current_path, "cookie.settings"))
-
+    print(os.path.abspath(__file__))
+    sys.path.append(os.path.join(current_path, "config"))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mainapp.settings.common")
     execute_from_command_line(sys.argv)

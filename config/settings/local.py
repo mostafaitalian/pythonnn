@@ -1,13 +1,16 @@
 from .base import *  # noqa
 from .base import env
-
+import os
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='JMPlJfdplAutNihxuIzMMQ3sAQ7HG8XM99Ngre6orCWfM0SIwdK3OPaXZ4qMVwCu')
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
+DJANGO_SETTINGS_MODULE = 'config.settings.local'
+#SOME_SECRET_KEY=get_env_varible("SOME_SECRET_KEY")
 ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
